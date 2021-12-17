@@ -1,8 +1,7 @@
-import React from 'react';
 import moment from 'moment';
 import { List, ListItem } from '@material-ui/core';
 import styled from 'styled-components';
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 
 const Container = styled.div`
   height: calc(100% - 56px);
@@ -68,16 +67,19 @@ const ChatsList = () => {
   const [chats, setChats] = useState<any[]>([]);
 
   useMemo(async () => {
-    const body = await fetch(`${process.env.REACT_APP_SERVER_URL}/graphql`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({query: getChatQuery}),
-    });
+    const response = await fetch(
+      `${process.env.REACT_APP_SERVER_URL}/graphql`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: getChatQuery }),
+      }
+    );
     const {
       data: { chats },
-    } = await body.json();
+    } = await response.json();
     setChats(chats);
   }, []);
 
@@ -86,14 +88,19 @@ const ChatsList = () => {
       <StyledList>
         {chats.map((chat) => (
           <StyledListItem key={chat.id} button>
-            <ChatPicture src={chat.picture} alt="Profile" />
-            <div>{chat.name}</div>
+            <ChatPicture
+              data-testid="picture"
+              src={chat.picture}
+              alt="Profile"
+            />
             <ChatInfo>
-              <ChatName>{chat.name}</ChatName>
+              <ChatName data-testid="name">{chat.name}</ChatName>
               {chat.lastMessage && (
                 <React.Fragment>
-                  <MessageContent>{chat.lastMessage.content}</MessageContent>
-                  <MessageDate>
+                  <MessageContent data-testid="content">
+                    {chat.lastMessage.content}
+                  </MessageContent>
+                  <MessageDate data-testid="date">
                     {moment(chat.lastMessage.createdAt).format('HH:mm')}
                   </MessageDate>
                 </React.Fragment>
